@@ -27,7 +27,7 @@ public class EffortLoggerPrototype extends Application {
     public void start(Stage primaryStage) {
         System.out.println("Effort Logger Console Started!");
         primaryStage.setTitle("Effort Logger Prototype");
-
+        
         // Create text fields for ID and password with black text and white background
         TextField idTextField = new TextField();
         idTextField.setPromptText("ID");
@@ -43,16 +43,9 @@ public class EffortLoggerPrototype extends Application {
         idLabel.setTextFill(Color.WHITE);
         passwordLabel.setTextFill(Color.WHITE);
 
-        Button loginButton = new Button("Login");
-        loginButton.setMinWidth(Button.USE_PREF_SIZE);
-        loginButton.setStyle("-fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
-        loginButton.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                String id = idTextField.getText();
-                String password = passwordTextField.getText();
-                System.out.println("ID: " + id + ", Password: " + password);
-            }
-        });
+        Label warningLabel = new Label("Invalid ID");
+        warningLabel.setTextFill(Color.RED);
+        warningLabel.setVisible(false); // Initially, hide the warning label
 
         // Create a grid pane to organize the elements with padding
         GridPane grid = new GridPane();
@@ -64,13 +57,88 @@ public class EffortLoggerPrototype extends Application {
         grid.add(passwordLabel, 0, 1);
         grid.add(passwordTextField, 1, 1);
         grid.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY))); // Set the background to black
-
-        
+  
         // Create a layout for centering
         BorderPane root = new BorderPane();
         root.setCenter(grid);
         root.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         
+        // Add the warning label to the GridPane
+        grid.add(warningLabel, 1, 2);
+        
+        Button loginButton = new Button("Login");
+        loginButton.setMinWidth(Button.USE_PREF_SIZE);
+        loginButton.setStyle("-fx-text-fill: white; -fx-background-color: black; -fx-border-color: white;");
+        loginButton.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                String id = idTextField.getText();
+                String password = passwordTextField.getText();
+                
+                if(EffortLoggerPermissions.isIdValid(id))
+                {
+                	System.out.println("ID: " + id + ", Password: " + password);
+                
+                	// Close the previous window
+                	Stage oldStage = (Stage) loginButton.getScene().getWindow();
+                	oldStage.close();
+                	
+                	if(EffortLoggerPermissions.isSupervisor(id))
+                	{
+                		// Create a new stage for the new window
+                		Stage newStage = new Stage();
+                		newStage.setTitle("Supervisor Landing"); // Set the title of the new window
+
+                		// Create the content for the new window (e.g., a label)
+                		Label newLabel = new Label("Welcome to the new window!");
+                		newLabel.setTextFill(Color.WHITE);
+                
+                		// Create a layout for the content
+                		BorderPane newRoot = new BorderPane();
+                		newRoot.setCenter(newLabel);
+                	
+                		// Create a scene for the new window
+                		Scene newScene = new Scene(newRoot, 400, 300);
+                		newScene.setFill(Color.BLACK);
+
+                		// Set the scene for the new stage
+                		newStage.setScene(newScene);
+                	
+                		// Show the new window
+                		newStage.show();
+                	}
+                	else
+                	{
+                		// Create a new stage for the new window
+                		Stage newStage = new Stage();
+                		newStage.setTitle("Employee Landing"); // Set the title of the new window
+
+                		// Create the content for the new window (e.g., a label)
+                		Label newLabel = new Label("Welcome to the new window!");
+                		newLabel.setTextFill(Color.WHITE);
+                
+                		// Create a layout for the content
+                		BorderPane newRoot = new BorderPane();
+                		newRoot.setCenter(newLabel);
+                	
+                		// Create a scene for the new window
+                		Scene newScene = new Scene(newRoot, 400, 300);
+                		newScene.setFill(Color.BLACK);
+
+                		// Set the scene for the new stage
+                		newStage.setScene(newScene);
+                	
+                		// Show the new window
+                		newStage.show();
+                	}
+            	}
+                else
+                {
+                    warningLabel.setVisible(true);
+                }
+                
+            }
+        });
+
         // Create a label for the title with custom font and white text
         Label titleLabel = new Label("Effort Logger");
         titleLabel.setFont(new Font("Lucida Console", 20)); // Set the font to Lucida Console with size 20
